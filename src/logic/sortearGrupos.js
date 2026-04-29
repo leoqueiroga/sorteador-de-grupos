@@ -17,7 +17,10 @@ function shuffle(arr) {
 function calcularTamanhosGrupos(n, g) {
     const base = Math.floor(n / g);
     const extras = n % g;
-    return Array.from({ length: g }, (_, i) => (i < extras ? base + 1 : base));
+    // Grupos menores (base) aparecem primeiro; grupos maiores (base+1) por último
+    return Array.from({ length: g }, (_, i) =>
+        i < g - extras ? base : base + 1,
+    );
 }
 
 /**
@@ -186,7 +189,12 @@ export function sortear(atletas) {
     const tamanhos = calcularTamanhosGrupos(n, modo.numGrupos);
     const gruposAtletas = distribuirComRestricaoEscola(atletas, tamanhos);
 
-    const grupos = gruposAtletas.map((ats, i) => ({
+    // Ordena grupos por número de atletas (menores primeiro) e reatribui as letras
+    const gruposOrdenados = [...gruposAtletas].sort(
+        (a, b) => a.length - b.length,
+    );
+
+    const grupos = gruposOrdenados.map((ats, i) => ({
         nome: `Grupo ${LETRAS[i]}`,
         letra: LETRAS[i],
         atletas: ats,
